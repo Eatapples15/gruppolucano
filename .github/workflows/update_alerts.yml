@@ -1,0 +1,27 @@
+name: Update Allerte Map
+on:
+  schedule:
+    - cron: '0 * * * *' # Gira ogni ora
+  workflow_dispatch: # Permette l'avvio manuale
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4
+      - name: Run Scraper
+        run: python scraper.py
+      - name: Commit and Push
+        run: |
+          git config --global user.name 'AlertBot'
+          git config --global user.email 'bot@github.com'
+          git add tutto_bollettino.json
+          git commit -m "Update bollettino $(date)"
+          git push
