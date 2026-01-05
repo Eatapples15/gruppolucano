@@ -1,7 +1,6 @@
 {
     "metadata": {
-        "last_update": "2026-01-05T15:58:29.166530",
-        "status": "success"
+        "last_update": "2026-01-05T16:11:51.464557"
     },
     "alerts": {
         "zone": {
@@ -48,11 +47,15 @@
                 "rischio_domani": "Temporali"
             }
         },
-        "url_bollettino": "https://centrofunzionale.regione.basilicata.it/ew/ew_pdf/a/Bollettino_Criticita_Regione_Basilicata_05_01_2026.pdf",
         "data_bollettino": "05/01/2026",
-        "validita_inizio": "ore 14:00 del 05/01/2026",
-        "validita_fine": "ore 23:59 del 06/01/2026",
-        "Salerno": "VERDE",
-        "Cosenza": "VERDE"
+        "Salerno": {
+            "oggi": "red",
+            "domani": "red"
+        },
+        "Cosenza": {
+            "oggi": "red",
+            "domani": "red"
+        },
+        "url_bollettino": "https://centrofunzionale.regione.basilicata.it/ew/ew_pdf/a/Bollettino_Criticita_Regione_Basilicata_05_01_2026.pdf"
     }
 }
