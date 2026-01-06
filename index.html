@@ -1,110 +1,54 @@
-
 <!DOCTYPE html>
-<html lang="it">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>GeoJSON Merger - Sud Italia</title>
+    <title>GeoJSON Merger Finale</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; background: #f0f2f5; line-height: 1.6; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
-        h2 { color: #003366; border-bottom: 2px solid #003366; padding-bottom: 10px; }
-        .input-group { margin-bottom: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; color: #555; }
-        input[type="text"] { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
-        button { background: #003366; color: white; border: none; padding: 15px 25px; border-radius: 5px; cursor: pointer; font-size: 1rem; font-weight: bold; width: 100%; transition: 0.3s; }
-        button:hover { background: #0055aa; }
-        #status { margin-top: 20px; padding: 15px; border-radius: 5px; display: none; }
-        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        body { font-family: sans-serif; padding: 20px; text-align: center; }
+        .box { border: 2px dashed #ccc; padding: 20px; margin: 20px auto; max-width: 600px; }
+        button { background: #003366; color: white; padding: 10px 20px; border: none; cursor: pointer; }
     </style>
 </head>
 <body>
-
-<div class="container">
-    <h2>Unificatore GeoJSON per Mappa Vigilanza</h2>
-    <p>Inserisci gli URL <strong>RAW</strong> di GitHub dei tre file GeoJSON. Il tool estrarrà le <em>features</em> e creerà un unico file valido.</p>
-    
-    <div class="input-group">
-        <label>URL GeoJSON Basilicata (Aree Allerta):</label>
-        <input type="text" id="url-bas" placeholder="https://raw.githubusercontent.com/..." value="https://raw.githubusercontent.com/pcm-dpc/DPC-Bollettini-Criticita-Idrogeologica-Idraulica/master/geojson/aree_allerta.json">
-        <small>Nota: Questo file contiene già tutte le zone d'Italia, lo filtreremo automaticamente.</small>
+    <h2>Fondi Basilicata + Campania/Calabria</h2>
+    <div class="box">
+        <button onclick="mergeFiles()">GENERA GEOJSON UNIFICATO</button>
     </div>
+    <p id="status"></p>
 
-    <div class="input-group">
-        <label>URL GeoJSON Salerno (Comuni/Limiti):</label>
-        <input type="text" id="url-sal" placeholder="https://raw.githubusercontent.com/..." value="https://raw.githubusercontent.com/openpolis/geojson-italy/master/geojson/limits_P_65_municipalities.geojson">
-    </div>
-
-    <div class="input-group">
-        <label>URL GeoJSON Cosenza (Comuni/Limiti):</label>
-        <input type="text" id="url-cos" placeholder="https://raw.githubusercontent.com/..." value="https://raw.githubusercontent.com/openpolis/geojson-italy/master/geojson/limits_P_78_municipalities.geojson">
-    </div>
-
-    <button onclick="mergeGeoJSON()">UNIFICA E SCARICA JSON</button>
-
-    <div id="status"></div>
-</div>
-
-<script>
-    async function mergeGeoJSON() {
-        const statusDiv = document.getElementById('status');
-        statusDiv.style.display = 'block';
-        statusDiv.className = 'success';
-        statusDiv.innerText = "Elaborazione in corso... attendere.";
-
-        const urls = [
-            document.getElementById('url-bas').value,
-            document.getElementById('url-sal').value,
-            document.getElementById('url-cos').value
-        ];
-
-        try {
-            const responses = await Promise.all(urls.map(url => fetch(url).then(r => r.json())));
+    <script>
+        async function mergeFiles() {
+            const status = document.getElementById('status');
+            status.innerText = "Recupero file...";
             
-            let combinedFeatures = [];
+            const URL_BASI = "https://raw.githubusercontent.com/Eatapples15/gruppolucano/refs/heads/main/Basilicata.json";
+            const URL_EXTRA = "https://raw.githubusercontent.com/Eatapples15/gruppolucano/refs/heads/main/aree_allerta.json";
 
-            // 1. Processo Basilicata (Filtriamo solo BASILICATA dal file DPC)
-            const basiFeatures = responses[0].features.filter(f => 
-                f.properties.Nome_Reg && f.properties.Nome_Reg.toUpperCase() === "BASILICATA"
-            );
-            combinedFeatures.push(...basiFeatures);
+            try {
+                const [resB, resE] = await Promise.all([
+                    fetch(URL_BASI).then(r => r.json()),
+                    fetch(URL_EXTRA).then(r => r.json())
+                ]);
 
-            // 2. Processo Salerno (Aggiungiamo proprietà Nome_Reg per la mappa)
-            responses[1].features.forEach(f => {
-                f.properties.Nome_Reg = "CAMPANIA";
-                combinedFeatures.push(f);
-            });
+                // Forziamo la proprietà Nome_Reg su ogni comune della Basilicata
+                resB.features.forEach(f => {
+                    f.properties.Nome_Reg = "BASILICATA";
+                });
 
-            // 3. Processo Cosenza (Aggiungiamo proprietà Nome_Reg per la mappa)
-            responses[2].features.forEach(f => {
-                f.properties.Nome_Reg = "CALABRIA";
-                combinedFeatures.push(f);
-            });
+                const finalGeo = {
+                    type: "FeatureCollection",
+                    features: [...resB.features, ...resE.features]
+                };
 
-            // Creazione GeoJSON finale
-            const finalGeoJSON = {
-                "type": "FeatureCollection",
-                "features": combinedFeatures
-            };
-
-            // Download del file
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(finalGeoJSON));
-            const downloadAnchorNode = document.createElement('a');
-            downloadAnchorNode.setAttribute("href", dataStr);
-            downloadAnchorNode.setAttribute("download", "aree_allerta.json");
-            document.body.appendChild(downloadAnchorNode);
-            downloadAnchorNode.click();
-            downloadAnchorNode.remove();
-
-            statusDiv.className = 'success';
-            statusDiv.innerText = "Successo! Il file 'aree_allerta.json' è stato scaricato. Caricalo nella tua repo GitHub.";
-
-        } catch (error) {
-            statusDiv.className = 'error';
-            statusDiv.innerText = "Errore: " + error.message + ". Verifica gli URL o i permessi CORS.";
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(finalGeo));
+                const dl = document.createElement('a');
+                dl.setAttribute("href", dataStr);
+                dl.setAttribute("download", "aree_allerta_sud.json");
+                dl.click();
+                status.innerText = "Fatto! Carica 'aree_allerta_sud.json' su GitHub.";
+            } catch (e) {
+                status.innerText = "Errore: " + e.message;
+            }
         }
-    }
-</script>
-
+    </script>
 </body>
 </html>
