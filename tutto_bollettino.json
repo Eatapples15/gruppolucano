@@ -1,53 +1,53 @@
 {
     "metadata": {
-        "last_update": "2026-01-07T11:14:11.759660"
+        "last_update": "2026-01-07T12:29:41.299971"
     },
     "alerts": {
         "zone": {
             "BASI A1": {
                 "oggi": "green",
                 "rischio_oggi": "Assenza di fenomeni significativi",
-                "domani": "yellow",
-                "rischio_domani": "Temporali"
+                "domani": "green",
+                "rischio_domani": "Assenza di fenomeni significativi"
             },
             "BASI A2": {
                 "oggi": "green",
                 "rischio_oggi": "Assenza di fenomeni significativi",
-                "domani": "yellow",
-                "rischio_domani": "Temporali"
+                "domani": "green",
+                "rischio_domani": "Assenza di fenomeni significativi"
             },
             "BASI B": {
                 "oggi": "green",
                 "rischio_oggi": "Assenza di fenomeni significativi",
-                "domani": "yellow",
-                "rischio_domani": "Temporali"
+                "domani": "green",
+                "rischio_domani": "Assenza di fenomeni significativi"
             },
             "BASI C": {
                 "oggi": "green",
                 "rischio_oggi": "Assenza di fenomeni significativi",
-                "domani": "yellow",
-                "rischio_domani": "Temporali"
+                "domani": "green",
+                "rischio_domani": "Assenza di fenomeni significativi"
             },
             "BASI D": {
                 "oggi": "yellow",
-                "rischio_oggi": "Temporali",
-                "domani": "yellow",
-                "rischio_domani": "Idrogeologico + Temporali"
+                "rischio_oggi": "Idrogeologico",
+                "domani": "green",
+                "rischio_domani": "Assenza di fenomeni significativi"
             },
             "BASI E1": {
                 "oggi": "green",
                 "rischio_oggi": "Assenza di fenomeni significativi",
-                "domani": "yellow",
-                "rischio_domani": "Temporali"
+                "domani": "green",
+                "rischio_domani": "Assenza di fenomeni significativi"
             },
             "BASI E2": {
                 "oggi": "green",
                 "rischio_oggi": "Assenza di fenomeni significativi",
-                "domani": "yellow",
-                "rischio_domani": "Temporali"
+                "domani": "green",
+                "rischio_domani": "Assenza di fenomeni significativi"
             }
         },
-        "data_bollettino": "06/01/2026",
+        "data_bollettino": "07/01/2026",
         "Salerno": {
             "oggi": "green",
             "domani": "yellow"
@@ -56,7 +56,7 @@
             "oggi": "green",
             "domani": "green"
         },
-        "url_bollettino": "https://centrofunzionale.regione.basilicata.it/ew/ew_pdf/a/Bollettino_Criticita_Regione_Basilicata_06_01_2026.pdf",
-        "validita_fine": "ore 23:59 del 07/01/2026"
+        "url_bollettino": "https://centrofunzionale.regione.basilicata.it/ew/ew_pdf/a/Bollettino_Criticita_Regione_Basilicata_07_01_2026.pdf",
+        "validita_fine": "ore 23:59 del 08/01/2026"
     }
 }
