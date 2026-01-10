@@ -1,6 +1,6 @@
 {
     "metadata": {
-        "last_update": "2026-01-10T11:11:27.508467"
+        "last_update": "2026-01-10T12:24:51.110228"
     },
     "alerts": {
         "zone": {
@@ -11,8 +11,8 @@
                 "rischio_domani": "Assenza di fenomeni significativi"
             },
             "BASI A2": {
-                "oggi": "green",
-                "rischio_oggi": "Assenza di fenomeni significativi",
+                "oggi": "yellow",
+                "rischio_oggi": "Temporali",
                 "domani": "green",
                 "rischio_domani": "Assenza di fenomeni significativi"
             },
@@ -23,8 +23,8 @@
                 "rischio_domani": "Assenza di fenomeni significativi"
             },
             "BASI C": {
-                "oggi": "green",
-                "rischio_oggi": "Assenza di fenomeni significativi",
+                "oggi": "yellow",
+                "rischio_oggi": "Temporali",
                 "domani": "green",
                 "rischio_domani": "Assenza di fenomeni significativi"
             },
@@ -47,7 +47,7 @@
                 "rischio_domani": "Assenza di fenomeni significativi"
             }
         },
-        "data_bollettino": "09/01/2026",
+        "data_bollettino": "10/01/2026",
         "Salerno": {
             "oggi": "green",
             "domani": "yellow"
@@ -56,7 +56,7 @@
             "oggi": "green",
             "domani": "green"
         },
-        "url_bollettino": "https://centrofunzionale.regione.basilicata.it/ew/ew_pdf/a/Bollettino_Criticita_Regione_Basilicata_09_01_2026.pdf",
-        "validita_fine": "ore 23:59 del 10/01/2026"
+        "url_bollettino": "https://centrofunzionale.regione.basilicata.it/ew/ew_pdf/a/Bollettino_Criticita_Regione_Basilicata_10_01_2026.pdf",
+        "validita_fine": "ore 23:59 del 11/01/2026"
     }
 }
