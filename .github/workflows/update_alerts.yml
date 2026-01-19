@@ -1,26 +1,32 @@
-name: Update Allerte Sud
+name: Aggiornamento Automatico Alerte Calabria
+
 on:
   schedule:
-    - cron: '0 * * * *' # Gira ogni ora
-  workflow_dispatch:
+    - cron: '0 * * *' # Esegue ogni giorno alle 08:00 e alle 14:00 UTC
+  workflow_dispatch: # Permette di avviarlo manualmente per test
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v3
+
       - name: Setup Python
         uses: actions/setup-python@v4
-        with: { python-version: '3.9' }
-      - name: Install dependencies
-        run: pip install requests beautifulsoup4
-      - name: Run Scraper
-        run: python scraper.py
-      - name: Commit and Push
+        with:
+          python-version: '3.9'
+
+      - name: Installa dipendenze
+        run: pip install requests
+
+      - name: Esegui script di aggiornamento
+        run: python update_calabria.py
+
+      - name: Commit e Push dei cambiamenti
         run: |
-          git config --global user.name 'AlertBot'
-          git config --global user.email 'bot@github.com'
-          git add tutto_bollettino.json
-          git commit -m "Aggiornamento automatico bollettini"
+          git config --global user.name 'AlerteGL-Bot'
+          git config --global user.email 'bot@pcgl.it'
+          git add calabria.json
+          git commit -m "Aggiornamento automatico bollettino Calabria" || echo "Nessuna modifica da caricare"
           git push
