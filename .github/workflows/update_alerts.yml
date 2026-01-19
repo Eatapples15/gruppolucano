@@ -2,7 +2,7 @@ name: Aggiornamento Automatico Alerte Calabria
 
 on:
   schedule:
-    - cron: '0 * * *' # Esegue ogni giorno alle 08:00 e alle 14:00 UTC
+    - cron: '0 8,14 * * *' # Esegue ogni giorno alle 08:00 e alle 14:00 UTC
   workflow_dispatch: # Permette di avviarlo manualmente per test
 
 jobs:
