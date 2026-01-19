@@ -7,12 +7,13 @@ JSON_FILE = "calabria.json"
 ZONE_COSENZA = [1, 2, 5, 6]
 
 def get_color_norm(val):
-    if not val: return "unknown"
-    val = str(val).upper()
-    if any(x in val for x in ["ROSS", "4"]): return "rossa"
-    if any(x in val for x in ["ARANC", "3"]): return "arancione"
-    if any(x in val for x in ["GIALL", "2"]): return "gialla"
-    if any(x in val for x in ["VERD", "1"]): return "verde"
+    if val is None: return "unknown"
+    v = str(val).upper()
+    # Supporto per codici numerici (1=verde, 2=giallo, 3=arancione, 4=rosso)
+    if v == "1" or "VERD" in v: return "verde"
+    if v == "2" or "GIALL" in v: return "gialla"
+    if v == "3" or "ARANC" in v: return "arancione"
+    if v == "4" or "ROSS" in v: return "rossa"
     return "unknown"
 
 try:
@@ -20,42 +21,42 @@ try:
     r.raise_for_status()
     data = r.json()
 
-    # Inizializziamo la struttura di output
     output_zones = {}
     for z_id in ZONE_COSENZA:
         output_zones[str(z_id)] = {"oggi": "unknown", "domani": "unknown"}
 
-    # Funzione per estrarre i dati dalle liste today/tomorrow
-    def fill_period(period_key, day_label):
-        period_data = data.get(period_key, [])
-        # Se è una lista (probabile)
-        if isinstance(period_data, list):
-            for item in period_data:
-                # Cerchiamo l'ID zona (spesso 'id_zona' o 'id')
-                zid = str(item.get('id_zona') or item.get('id') or "")
-                if zid.isdigit() and int(zid) in ZONE_COSENZA:
-                    # Estraiamo il livello (spesso 'id_livello' o 'colore')
-                    level = item.get('id_livello') or item.get('colore') or item.get('allerta')
-                    output_zones[zid][day_label] = get_color_norm(level)
-        # Se è un dizionario (alternativa)
-        elif isinstance(period_data, dict):
-            for zid, val in period_data.items():
-                if zid.isdigit() and int(zid) in ZONE_COSENZA:
-                    output_zones[zid][day_label] = get_color_norm(val)
+    debug_sample = None
 
-    # Riempiamo oggi e domani
-    fill_period('today', 'oggi')
-    fill_period('tomorrow', 'domani')
+    def process_period(period_key, day_label):
+        global debug_sample
+        items = data.get(period_key, [])
+        if not isinstance(items, list): return
+        
+        for item in items:
+            if not debug_sample: debug_sample = item # Salviamo un campione per debug
+            
+            # Ricerca ID Zona in tutte le chiavi possibili
+            zid_raw = item.get('id_zona') or item.get('id_area') or item.get('id') or item.get('zona')
+            zid = str(zid_raw) if zid_raw else ""
+            
+            if zid.isdigit() and int(zid) in ZONE_COSENZA:
+                # Ricerca Livello in tutte le chiavi possibili
+                level = item.get('id_livello') or item.get('livello') or item.get('colore') or item.get('allerta')
+                output_zones[zid][day_label] = get_color_norm(level)
+
+    process_period('today', 'oggi')
+    process_period('tomorrow', 'domani')
 
     final_json = {
         "zone_calabria": output_zones,
         "ultimo_aggiornamento": datetime.now().strftime("%d/%m/%Y %H:%M"),
-        "status": "Dati validati correttamente"
+        "status": "Validazione completata",
+        "debug_item_sample": debug_sample # Questo ci dirà l'esatta struttura se fallisce ancora
     }
 
     with open(JSON_FILE, 'w', encoding='utf-8') as f:
         json.dump(final_json, f, indent=2)
-    print("Sincronizzazione completata con successo.")
 
 except Exception as e:
-    print(f"Errore: {e}")
+    with open(JSON_FILE, 'w') as f:
+        json.dump({"status": f"Errore: {str(e)}", "ultimo_aggiornamento": datetime.now().strftime("%d/%m/%Y %H:%M")}, f)
