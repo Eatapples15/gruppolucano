@@ -1,71 +1,22 @@
 {
   "zone_calabria": {
     "1": {
-      "oggi": "unknown",
-      "domani": "unknown"
+      "oggi": "gialla",
+      "domani": "gialla"
     },
     "2": {
-      "oggi": "unknown",
-      "domani": "unknown"
+      "oggi": "gialla",
+      "domani": "gialla"
     },
     "5": {
-      "oggi": "unknown",
-      "domani": "unknown"
+      "oggi": "gialla",
+      "domani": "arancione"
     },
     "6": {
-      "oggi": "unknown",
-      "domani": "unknown"
+      "oggi": "arancione",
+      "domani": "arancione"
     }
   },
-  "ultimo_aggiornamento": "19/01/2026 16:05",
-  "status": "ERRORE: Struttura identificata ma zone non trovate",
-  "debug": {
-    "struttura": {
-      "today_type": "<class 'dict'>",
-      "tomorrow_type": "<class 'dict'>"
-    },
-    "count_oggi": 0,
-    "count_domani": 0,
-    "campione_oggi": {
-      "hydrogeologicalCriticality": {
-        "startTime": "12:00",
-        "endTime": "24:00",
-        "zones": {
-          "cala1": {
-            "thunderstormAlertLevel": "MAU:AlertLevel:Yellow",
-            "hydraulicAlertLevel": "MAU:AlertLevel:Yellow"
-          },
-          "cala2": {
-            "thunderstormAlertLevel": "MAU:AlertLevel:Yellow",
-            "hydraulicAlertLevel": "MAU:AlertLevel:Yellow"
-          },
-          "cala3": {
-            "thunderstormAlertLevel": "MAU:AlertLevel:Yellow",
-            "hydraulicAlertLevel": "MAU:AlertLevel:Yellow"
-          },
-          "cala4": {
-            "thunderstormAlertLevel": "MAU:AlertLevel:Orange",
-            "hydraulicAlertLevel": "MAU:AlertLevel:Orange"
-          },
-          "cala5": {
-            "thunderstormAlertLevel": "MAU:AlertLevel:Yellow",
-            "hydraulicAlertLevel": "MAU:AlertLevel:Yellow"
-          },
-          "cala6": {
-            "thunderstormAlertLevel": "MAU:AlertLevel:Orange",
-            "hydraulicAlertLevel": "MAU:AlertLevel:Orange"
-          },
-          "cala7": {
-            "thunderstormAlertLevel": "MAU:AlertLevel:Orange",
-            "hydraulicAlertLevel": "MAU:AlertLevel:Orange"
-          },
-          "cala8": {
-            "thunderstormAlertLevel": "MAU:AlertLevel:Orange",
-            "hydraulicAlertLevel": "MAU:AlertLevel:Orange"
-          }
-        },
-        "note": "Si prevede il persistere di precipitazioni diffuse, anche a\ncarattere di rovescio o temporale, con particolare riferimento ai\nsettori meridionali con quantitativi cumulati molto elevati. I\nfenomeni saranno accompagnati da rovesci di forte intensit\u00e0,\nfrequente attivit\u00e0 elettrica e locali grandinate. Si prevedono\nventi di burrasca dai quadranti orientali, con forti mareggiate\nsulle coste esposte."
-      }
-    }
-  }
+  "ultimo_aggiornamento": "19/01/2026 16:08",
+  "status": "Dati validati con successo dalla struttura hydrogeologicalCriticality"
 }
