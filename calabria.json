@@ -1,11 +1,22 @@
 {
-  "zone_calabria": {},
-  "ultimo_aggiornamento": "19/01/2026 15:58",
-  "status": "ERRORE: Zone non trovate nel flusso JSON",
-  "debug_raw_keys": [
-    "documentData",
-    "today",
-    "tomorrow",
-    "attachments"
-  ]
+  "zone_calabria": {
+    "1": {
+      "oggi": "unknown",
+      "domani": "unknown"
+    },
+    "2": {
+      "oggi": "unknown",
+      "domani": "unknown"
+    },
+    "5": {
+      "oggi": "unknown",
+      "domani": "unknown"
+    },
+    "6": {
+      "oggi": "unknown",
+      "domani": "unknown"
+    }
+  },
+  "ultimo_aggiornamento": "19/01/2026 16:00",
+  "status": "Dati validati correttamente"
 }
