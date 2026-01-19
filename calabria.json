@@ -1,5 +1,11 @@
 {
   "zone_calabria": {},
-  "ultimo_aggiornamento": "19/01/2026 15:53",
-  "status": "ERRORE: Struttura API non riconosciuta"
+  "ultimo_aggiornamento": "19/01/2026 15:58",
+  "status": "ERRORE: Zone non trovate nel flusso JSON",
+  "debug_raw_keys": [
+    "documentData",
+    "today",
+    "tomorrow",
+    "attachments"
+  ]
 }
