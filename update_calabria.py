@@ -6,13 +6,16 @@ API_URL = "https://pc2.protezionecivilecalabria.it/api/alerts/last-mau"
 JSON_FILE = "calabria.json"
 ZONE_COSENZA = [1, 2, 5, 6]
 
-def get_color_norm(val):
-    if val is None: return "unknown"
-    v = str(val).upper()
-    if v == "1" or "VERD" in v: return "verde"
-    if v == "2" or "GIALL" in v: return "gialla"
-    if v == "3" or "ARANC" in v: return "arancione"
-    if v == "4" or "ROSS" in v: return "rossa"
+# Rango di gravità per calcolare il massimo rischio
+RANK = {"unknown": -1, "verde": 0, "gialla": 1, "arancione": 2, "rossa": 3}
+
+def normalize(val):
+    if not val: return "unknown"
+    val = str(val).upper()
+    if "RED" in val or "ROSS" in val: return "rossa"
+    if "ORANGE" in val or "ARANC" in val: return "arancione"
+    if "YELLOW" in val or "GIALL" in val: return "gialla"
+    if "GREEN" in val or "VERD" in val: return "verde"
     return "unknown"
 
 try:
@@ -20,56 +23,35 @@ try:
     r.raise_for_status()
     data = r.json()
 
-    output_zones = {str(z): {"oggi": "unknown", "domani": "unknown"} for z in ZONE_COSENZA}
-    structure_info = {}
+    final_zones = {}
 
-    def parse_period(period_key, day_label):
-        content = data.get(period_key)
-        structure_info[f"{period_key}_type"] = str(type(content))
+    for period in ['today', 'tomorrow']:
+        label = "oggi" if period == 'today' else "domani"
+        # Navigazione sicura nella struttura identificata
+        source_zones = data.get(period, {}).get('hydrogeologicalCriticality', {}).get('zones', {})
         
-        items = []
-        if isinstance(content, list):
-            items = content
-        elif isinstance(content, dict):
-            # Se è un dizionario, proviamo a prendere i valori o cerchiamo una lista interna
-            items = list(content.values()) if not any(isinstance(v, dict) for v in content.values()) else [content]
-        
-        found_in_period = 0
-        sample = None
-        
-        for item in items:
-            if isinstance(item, dict):
-                if sample is None: sample = item
-                # Cerchiamo l'ID zona in varie chiavi possibili
-                zid_raw = item.get('id_zona') or item.get('id_area') or item.get('zona_id') or item.get('id')
-                zid = str(zid_raw) if zid_raw else ""
-                
-                if zid.isdigit() and int(zid) in ZONE_COSENZA:
-                    # Cerchiamo il livello/colore
-                    lvl = item.get('id_livello') or item.get('livello') or item.get('id_stato') or item.get('colore')
-                    output_zones[zid][day_label] = get_color_norm(lvl)
-                    found_in_period += 1
-        
-        return found_in_period, sample
+        for num in ZONE_COSENZA:
+            z_key = f"cala{num}"
+            z_id = str(num)
+            if z_id not in final_zones: final_zones[z_id] = {}
 
-    found_oggi, sample_oggi = parse_period('today', 'oggi')
-    found_domani, sample_domani = parse_period('tomorrow', 'domani')
+            # Estrazione dei due livelli di allerta
+            z_data = source_zones.get(z_key, {})
+            lv1 = normalize(z_data.get('thunderstormAlertLevel'))
+            lv2 = normalize(z_data.get('hydraulicAlertLevel'))
 
-    final_json = {
-        "zone_calabria": output_zones,
+            # Selezione del massimo rischio tra i due
+            final_zones[z_id][label] = lv1 if RANK[lv1] >= RANK[lv2] else lv2
+
+    output = {
+        "zone_calabria": final_zones,
         "ultimo_aggiornamento": datetime.now().strftime("%d/%m/%Y %H:%M"),
-        "status": "Dati trovati" if (found_oggi + found_domani) > 0 else "ERRORE: Struttura identificata ma zone non trovate",
-        "debug": {
-            "struttura": structure_info,
-            "count_oggi": found_oggi,
-            "count_domani": found_domani,
-            "campione_oggi": sample_oggi
-        }
+        "status": "Dati validati con successo dalla struttura hydrogeologicalCriticality"
     }
 
     with open(JSON_FILE, 'w', encoding='utf-8') as f:
-        json.dump(final_json, f, indent=2)
+        json.dump(output, f, indent=2)
+    print("Sincronizzazione completata.")
 
 except Exception as e:
-    with open(JSON_FILE, 'w', encoding='utf-8') as f:
-        json.dump({"status": f"Errore: {str(e)}", "ts": datetime.now().isoformat()}, f)
+    print(f"Errore: {e}")
