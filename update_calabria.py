@@ -16,49 +16,59 @@ def get_color_norm(val):
     if any(x in val for x in ["VERD", "1"]): return "verde"
     return "unknown"
 
-def find_zones(obj):
-    """Cerca ricorsivamente le zone nel JSON dell'API"""
-    zones_found = []
+def find_data_recursive(obj):
+    """Cerca zone e colori in profondità nel JSON"""
+    extracted = {}
+    
     if isinstance(obj, list):
         for item in obj:
-            zones_found.extend(find_zones(item))
+            extracted.update(find_data_recursive(item))
     elif isinstance(obj, dict):
-        # Se l'oggetto ha un ID che somiglia a una zona
-        z_id = obj.get('id') or obj.get('numero') or obj.get('id_zona')
+        # Proviamo a vedere se questo oggetto è una zona
+        # Cerchiamo ID o Numero della zona
+        z_id = obj.get('id') or obj.get('numero') or obj.get('id_zona') or obj.get('zona')
+        
         if z_id and str(z_id).isdigit() and int(z_id) in ZONE_COSENZA:
-            zones_found.append(obj)
+            # Abbiamo trovato una zona di interesse, cerchiamo l'allerta
+            # Cerchiamo chiavi comuni per oggi e domani
+            oggi = obj.get('alert_level_today') or obj.get('today', {}).get('level') or obj.get('stato_oggi') or obj.get('criticita_idro_oggi')
+            domani = obj.get('alert_level_tomorrow') or obj.get('tomorrow', {}).get('level') or obj.get('stato_domani') or obj.get('criticita_idro_domani')
+            
+            extracted[str(z_id)] = {
+                "oggi": get_color_norm(oggi),
+                "domani": get_color_norm(domani)
+            }
         else:
+            # Se non è una zona, scava più a fondo nei valori
             for v in obj.values():
-                zones_found.extend(find_zones(v))
-    return zones_found
+                if isinstance(v, (dict, list)):
+                    extracted.update(find_data_recursive(v))
+    return extracted
 
 try:
     r = requests.get(API_URL, timeout=30)
     r.raise_for_status()
     raw_data = r.json()
 
-    extracted_zones = find_zones(raw_data)
+    # Avvia la scansione profonda
+    results = find_data_recursive(raw_data)
     
-    final_output = {
-        "zone_calabria": {},
+    output = {
+        "zone_calabria": results,
         "ultimo_aggiornamento": datetime.now().strftime("%d/%m/%Y %H:%M"),
-        "status": "Dati validati" if extracted_zones else "ERRORE: Struttura API non riconosciuta"
+        "status": "Dati validati" if results else "ERRORE: Zone non trovate nel flusso JSON",
+        "debug_raw_keys": list(raw_data.keys()) if isinstance(raw_data, dict) else "list_root"
     }
 
-    for z in extracted_zones:
-        zid = str(z.get('id') or z.get('numero') or z.get('id_zona'))
-        # Cerca i livelli di allerta
-        oggi = z.get('alert_level_today') or z.get('today', {}).get('level') or z.get('criticità_oggi')
-        domani = z.get('alert_level_tomorrow') or z.get('tomorrow', {}).get('level') or z.get('criticità_domani')
-        
-        final_output["zone_calabria"][zid] = {
-            "oggi": get_color_norm(oggi),
-            "domani": get_color_norm(domani)
-        }
-
     with open(JSON_FILE, 'w', encoding='utf-8') as f:
-        json.dump(final_output, f, indent=2)
-    print("Aggiornamento completato.")
+        json.dump(output, f, indent=2)
+    print(f"Update completato. Zone trovate: {list(results.keys())}")
 
 except Exception as e:
-    print(f"Errore: {e}")
+    error_data = {
+        "zone_calabria": {},
+        "ultimo_aggiornamento": datetime.now().strftime("%d/%m/%Y %H:%M"),
+        "status": f"Errore critico: {str(e)}"
+    }
+    with open(JSON_FILE, 'w') as f:
+        json.dump(error_data, f)
