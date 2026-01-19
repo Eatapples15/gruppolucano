@@ -1,40 +1,47 @@
-import json
 import requests
-import datetime
+import json
+import os
+from datetime import datetime
 
-def main():
-    # 1. Recupero dati Basilicata
-    res_bas = requests.get("https://raw.githubusercontent.com/Eatapples15/allerte_bollettino_basilicata/refs/heads/main/dati_bollettino.json")
-    data_bas = res_bas.json()
+# Configurazione
+API_URL = "https://pc2.protezionecivilecalabria.it/api/alerts/last-mau"
+JSON_FILE = "calabria.json"
+ZONE_COSENZA = [1, 2, 5, 6]
 
-    # 2. Struttura raffinata per Salerno e Cosenza
-    # Lo scraper dovrà estrarre questi valori dai link che hai fornito
-    # Esempio basato sui bollettini del 05/01/2026
-    salerno_status = {
-        "oggi": "green", 
-        "domani": "yellow" 
+def get_alert_level(level_id):
+    # Converte i codici numerici o testuali dell'API in colori validi per la tua dashboard
+    mapping = {
+        1: "verde", 2: "gialla", 3: "arancione", 4: "rossa",
+        "VERDE": "verde", "GIALLO": "gialla", "ARANCIONE": "arancione", "ROSSO": "rossa"
     }
-    cosenza_status = {
-        "oggi": "green", 
-        "domani": "green"
-    }
+    return mapping.get(level_id, "unknown")
 
-    full_alerts = {
-        "zone": data_bas.get("zone", {}),
-        "data_bollettino": data_bas.get("data_bollettino", ""),
-        "Salerno": salerno_status,
-        "Cosenza": cosenza_status,
-        "url_bollettino": data_bas.get("url_bollettino", ""),
-        "validita_fine": data_bas.get("validita_fine", "")
-    }
+try:
+    response = requests.get(API_URL, timeout=20)
+    response.raise_for_status()
+    data = response.json()
 
-    output = {
-        "metadata": {"last_update": datetime.datetime.now().isoformat()},
-        "alerts": full_alerts
+    new_data = {
+        "zone_calabria": {},
+        "ultimo_aggiornamento": datetime.now().strftime("%d/%m/%Y %H:%M")
     }
 
-    with open('tutto_bollettino.json', 'w') as f:
-        json.dump(output, f, indent=4)
+    # Estrazione dati per le zone di Cosenza
+    # Nota: La struttura dipende dall'output esatto dell'API (zones o alert_today)
+    zones = data.get('zones', [])
+    for zone in zones:
+        z_id = int(zone.get('id', 0))
+        if z_id in ZONE_COSENZA:
+            new_data["zone_calabria"][str(z_id)] = {
+                "oggi": get_alert_level(zone.get('alert_level_today')),
+                "domani": get_alert_level(zone.get('alert_level_tomorrow'))
+            }
 
-if __name__ == "__main__":
-    main()
+    # Salvataggio su file
+    with open(JSON_FILE, 'w', encoding='utf-8') as f:
+        json.dump(new_data, f, indent=2)
+    
+    print("Aggiornamento completato con successo.")
+
+except Exception as e:
+    print(f"Errore durante l'aggiornamento: {e}")
