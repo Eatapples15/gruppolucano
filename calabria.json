@@ -9,7 +9,7 @@
       "domani": "gialla"
     },
     "5": {
-      "oggi": "gialla",
+      "oggi": "arancione",
       "domani": "arancione"
     },
     "6": {
@@ -17,6 +17,6 @@
       "domani": "arancione"
     }
   },
-  "ultimo_aggiornamento": "20/01/2026 08:28",
+  "ultimo_aggiornamento": "20/01/2026 14:27",
   "status": "Dati validati con successo dalla struttura hydrogeologicalCriticality"
 }
