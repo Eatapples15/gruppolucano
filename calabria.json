@@ -2,21 +2,21 @@
   "zone_calabria": {
     "1": {
       "oggi": "gialla",
-      "domani": "arancione"
+      "domani": "verde"
     },
     "2": {
       "oggi": "gialla",
-      "domani": "arancione"
+      "domani": "verde"
     },
     "5": {
-      "oggi": "verde",
+      "oggi": "gialla",
       "domani": "gialla"
     },
     "6": {
-      "oggi": "verde",
-      "domani": "gialla"
+      "oggi": "gialla",
+      "domani": "verde"
     }
   },
-  "ultimo_aggiornamento": "20/02/2026 08:36",
+  "ultimo_aggiornamento": "20/02/2026 14:37",
   "status": "Dati validati con successo dalla struttura hydrogeologicalCriticality"
 }
