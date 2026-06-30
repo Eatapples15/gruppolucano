@@ -10,13 +10,13 @@
     },
     "5": {
       "oggi": "verde",
-      "domani": "verde"
+      "domani": "gialla"
     },
     "6": {
       "oggi": "verde",
-      "domani": "verde"
+      "domani": "gialla"
     }
   },
-  "ultimo_aggiornamento": "30/06/2026 10:53",
+  "ultimo_aggiornamento": "30/06/2026 16:21",
   "status": "Dati validati con successo dalla struttura hydrogeologicalCriticality"
 }
